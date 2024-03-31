@@ -44,6 +44,7 @@
                 <th scope="col">No. HP</th>
                 <th scope="col">User</th>
                 <th scope="col">Waktu</th>
+                <th scope="col">Status Aktif</th>
                 <th scope="col">Aksi</th>
             </tr>
         </thead>
@@ -74,12 +75,21 @@
                     dataList.empty();
 
                     $.each(response.data, function(index, dt) {
+                        let defcek="";
+                        if(dt.is_aktif) 
+                            defcek="checked";
+
                         dataList.append(`<tr> 
                                 <td>${dt.nomor}</td> 
                                 <td>${dt.nama}</td> 
                                 <td>${dt.hp}</td> 
                                 <td>${dt.user.name}</td> 
                                 <td>${dt.created_at_formatted}</td> 
+                                <td> 
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input ganti-status" type="checkbox" role="switch" data-id="${dt.id}" ${defcek}>
+                                    </div>
+                                </td>
                                 <td>
                                     <div class="btn-group btn-group-sm" role="group" aria-label="Basic example">
                                         <button type="button" class="btn btn-warning" onclick="ganti(${dt.id})" id="proses">Ganti</button>
@@ -104,6 +114,36 @@
             loadPesan(page, search);
         });
         
+        $(document).on('change', '.ganti-status', function() {
+            var vId = $(this).data('id');
+            var row = $(this).closest('tr');
+            var vMama = row.find('td:eq(1)').text();
+            var vHp = row.find('td:eq(2)').text();
+            var vIs_aktif = 1;
+            if (!$(this).is(':checked')) 
+                vIs_aktif = 0;
+        
+            // console.log(vData);
+            $.ajax({
+                url: '/api/pegawai/'+vId,
+                type: 'PUT',
+                data: {
+                    nama:vMama,
+                    hp:vHp,
+                    is_aktif:vIs_aktif,
+                },
+                dataType: 'json',
+                success: function(response) {
+                    console.log('update status berhasil');
+                    // loadData(); // Reload pesan list after submission
+                },
+                error: function() {
+                    alert('Gagal mengirim data.');
+                }
+            });            
+        });
+
+
         $('#tambahBaru').on('click', function(e) {
             e.preventDefault();
             let konfirmasi=false;

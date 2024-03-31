@@ -32,7 +32,7 @@ class WaPesanRequest extends FormRequest
     // set nilai user_id
     public function withValidator($validator)
     {
-        $data['user_id'] = 1; // Ganti dengan Auth::id() jika menggunakan autentikasi Laravel
+        $data['user_id'] = auth()->user()->id;
         $this->merge($data);
     }
 }

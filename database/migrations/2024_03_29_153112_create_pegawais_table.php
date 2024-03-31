@@ -17,6 +17,7 @@ class CreatePegawaisTable extends Migration
             $table->id();
             $table->string('nama')->nullable();
             $table->string('hp')->nullable();
+            $table->boolean('is_aktif')->default(1);
             $table->timestamps();
             $table->foreignId('user_id');
             $table->foreign('user_id')->references('id')->on('users')->restrictOnDelete();

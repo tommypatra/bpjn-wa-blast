@@ -40,7 +40,7 @@ class KirimPesanController extends Controller
         try {
             $simpanProses = Proses::create($request->all());
 
-            $dataPegawai = Pegawai::get();
+            $dataPegawai = Pegawai::where('is_aktif', true)->get();
             if ($dataPegawai->isEmpty()) {
                 DB::rollBack();
                 return response()->json(['message' => 'Data tidak ditemukan'], 404);

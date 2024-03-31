@@ -11,7 +11,7 @@ class PegawaiController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Pegawai::with('user')->orderByDesc('id');
+        $query = Pegawai::with('user')->orderBy('nama', 'asc');
         if ($request->has('search')) {
             $query->where('nama', 'like', '%' . $request->search . '%')
                 ->orWhere('hp', 'like', '%' . $request->search . '%');
