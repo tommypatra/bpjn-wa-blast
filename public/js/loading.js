@@ -23,3 +23,7 @@ $(document).ajaxStart(function() {
 $(document).ajaxStop(function() {
     hideLoading();
 });
+
+$(document).ajaxError(function() {
+    hideLoading();
+});

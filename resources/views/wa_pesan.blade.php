@@ -8,13 +8,13 @@
     <div class="accordion" id="pesanAccordion">
         <div class="accordion-item">
             <h2 class="accordion-header" id="pesanHeader">
-                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#bodyPesan" aria-expanded="false" aria-controls="judulPesan">
+                <button class="accordion-button collapsed" id="tambahForm" type="button" data-bs-toggle="collapse" data-bs-target="#bodyPesan" aria-expanded="false" aria-controls="judulPesan">
                     <h3>Pesan Baru</h3>
                 </button>
             </h2>
             <div id="bodyPesan" class="accordion-collapse collapse" aria-labelledby="pesanHeader" data-bs-parent="#pesanAccordion">
                 <div class="accordion-body">
-                    <form id="pesanform">
+                    <form id="form">
                         <input type="hidden" name="id" id="id" >
                         <div class="mb-3">
                             <label for="judul" class="form-label">Judul Pesan</label>
@@ -35,22 +35,23 @@
     <hr>
 
     <h3>Daftar Pesan</h3>
-    <table class="table">
-        <thead>
-            <tr>
-                <th scope="col">#</th>
-                <th scope="col">Judul</th>
-                <th scope="col">Pesan</th>
-                <th scope="col">User</th>
-                <th scope="col">Waktu</th>
-                <th scope="col">Aksi</th>
-            </tr>
-        </thead>
-        <tbody id="data-list">
-            <!-- Data pesan akan dimuat di sini -->
-        </tbody>
-    </table>
-
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Judul</th>
+                    <th scope="col">Pesan</th>
+                    <th scope="col">User</th>
+                    <th scope="col">Waktu</th>
+                    <th scope="col">Aksi</th>
+                </tr>
+            </thead>
+            <tbody id="data-list">
+                <!-- Data pesan akan dimuat di sini -->
+            </tbody>
+        </table>
+    </div>
     <!-- Pagination -->
     <nav aria-label="Page navigation">
         <ul class="pagination justify-content-center" id="pagination">
@@ -63,7 +64,55 @@
 <script src="{{ asset('js/token.js') }}"></script>
 
 <script>
-   function loadData(page = 1, search = '') {
+
+    $('#tambahForm').on('click', function() {
+        resetForm();
+        $('#judul').focus();
+    });        
+
+    var oldValue="";
+    $('#data-list').on('dblclick', 'td:nth-child(3)', function() {
+        oldValue = $(this).text(); 
+        $(this).html('<textarea class="form-control" id="edt-pesan" name="pesan">' + oldValue + '</textarea>'); // Ganti dengan textarea
+        $('#edt-pesan').focus(); 
+    });
+
+    $('#data-list').on('dblclick', 'td:nth-child(2)', function() {
+        oldValue = $(this).text(); 
+        $(this).html('<input type="text" class="form-control" id="edt-judul" name="judul" value="' + oldValue + '">'); // Ganti dengan input teks
+        $('#edt-judul').focus(); 
+    });
+
+    $('#data-list').on('focusout', 'input, textarea', function() {
+        var tr = $(this).closest('tr');
+        var newValue = $(this).val();
+        $(this).closest('td').html(newValue);
+
+        var wa_pesan_id = $(tr).data('wa_pesan_id');
+        var judul = $(tr).find('td:nth-child(2)').text();
+        var pesan = $(tr).find('td:nth-child(3)').text();    
+
+        console.log('wa : '+wa_pesan_id+' ,judul : '+judul+' pesan : '+pesan);
+        if(oldValue!==newValue)
+            $.ajax({
+                url: '/api/pesan/'+wa_pesan_id,
+                type: 'PUT',
+                data: {
+                    judul:judul,
+                    pesan:pesan,
+                },
+                dataType: 'json',
+                success: function(response) {
+                    toastr.success('operasi berhasil dilakukan!', 'berhasil');
+                },
+                error: function() {
+                    alert('operasi gagal dilakukan!');
+                }
+            });  
+
+    });
+    
+    function loadData(page = 1, search = '') {
             $.ajax({
                 url: '/api/pesan?page=' + page + '&search=' + search,
                 method: 'GET',
@@ -73,7 +122,7 @@
                     dataList.empty();
 
                     $.each(response.data, function(index, pesan) {
-                        dataList.append(`<tr> 
+                        dataList.append(`<tr data-wa_pesan_id="${pesan.id}"> 
                                 <td>${pesan.nomor}</td> 
                                 <td>${pesan.judul}</td> 
                                 <td>${pesan.pesan}</td> 
@@ -127,14 +176,21 @@
                     success: function(response) {
                         loadData();
                         // alert('data berhasil dihapus!');
+                        toastr.success('operasi berhasil dilakukan!', 'berhasil');
+
                     },
                     error: function() {
-                        alert('Gagal menghapus data.');
+                        alert('operasi gagal dilakukan!');
                     }
                 });                
         }
 
-        $("#pesanform").validate({
+        function resetForm(){
+            $('#form judul').val('');
+            $('#nama').focus();
+        }
+
+        $("#form").validate({
             submitHandler: function(form) {
                 let vType=($('#id').val()==='')?'POST':'PUT';
                 $.ajax({
@@ -144,10 +200,12 @@
                     dataType: 'json',
                     success: function(response) {
                         // alert('data berhasil dikirim!');
+                        toastr.success('operasi berhasil dilakukan!', 'berhasil');
                         loadData(); // Reload pesan list after submission
+                        resetForm();
                     },
                     error: function() {
-                        alert('Gagal mengirim data.');
+                        alert('operasi gagal dilakukan!');
                     }
                 });
             }

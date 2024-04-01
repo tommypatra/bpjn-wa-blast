@@ -49,11 +49,12 @@
                 data: $(form).serialize(),
                 dataType: 'json',
                 success: function(response) {
+                    toastr.success('login berhasil, proses set session!', 'login berhasil', {timeOut: 1000});
                     localStorage.setItem('access_token', response.access_token);
                     setSession(form);
                 },
                 error: function() {
-                    alert('Gagal login, user atau password anda salah!');
+                    alert('login gagal, user atau password anda salah!');
                 }
             });
         }
@@ -68,10 +69,12 @@
                 'X-CSRF-TOKEN': csrfToken
             },
             success: function (response) {
+                toastr.success('set session berhasil, akan diarahkan ke halaman dashboard!', 'login berhasil', {timeOut: 1000});
                 var goUrl = `{{ url('/dashboard') }}`;
                 window.location.replace(goUrl);
             },
             error: function (error) {
+                toastr.danger('set session gagal, hubungi admin!', 'login gagal');
                 console.error(error);
             }
         });

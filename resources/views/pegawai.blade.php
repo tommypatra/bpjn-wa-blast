@@ -36,23 +36,24 @@
     <hr>
 
     <h3>Daftar Pegawai</h3>
-    <table class="table">
-        <thead>
-            <tr>
-                <th scope="col">#</th>
-                <th scope="col">Nama Lengkap</th>
-                <th scope="col">No. HP</th>
-                <th scope="col">User</th>
-                <th scope="col">Waktu</th>
-                <th scope="col">Status Aktif</th>
-                <th scope="col">Aksi</th>
-            </tr>
-        </thead>
-        <tbody id="data-list">
-            <!-- Data pesan akan dimuat di sini -->
-        </tbody>
-    </table>
-
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Nama Lengkap</th>
+                    <th scope="col">No. HP</th>
+                    <th scope="col">User</th>
+                    <th scope="col">Waktu</th>
+                    <th scope="col">Status Aktif</th>
+                    <th scope="col">Aksi</th>
+                </tr>
+            </thead>
+            <tbody id="data-list">
+                <!-- Data pesan akan dimuat di sini -->
+            </tbody>
+        </table>
+    </div>
     <!-- Pagination -->
     <nav aria-label="Page navigation">
         <ul class="pagination justify-content-center" id="pagination">
@@ -135,14 +136,19 @@
                 dataType: 'json',
                 success: function(response) {
                     console.log('update status berhasil');
+                    toastr.success('operasi berhasil dilakukan!', 'berhasil');
                     // loadData(); // Reload pesan list after submission
                 },
                 error: function() {
-                    alert('Gagal mengirim data.');
+                    toastr.danger('operasi gagal dilakukan!', 'gagal');
                 }
             });            
         });
 
+        function resetForm(){
+            $('#form input').val('');
+            $('#nama').focus();
+        }
 
         $('#tambahBaru').on('click', function(e) {
             e.preventDefault();
@@ -152,12 +158,10 @@
             }            
             if(konfirmasi){
                 if(confirm('yakin isian form dikosongkan untuk tambah baru?')){
-                    $('#form input').val('');
-                    $('#nama').focus();
+                    resetForm();
                 }
             }else{
-                $('#form input').val('');
-                $('#nama').focus();
+                resetForm();
             }
         });
 
@@ -190,7 +194,7 @@
                     $('#nama').focus(); // Fokuskan input nama                
                 },
                 error: function() {
-                    alert('data tidak ditemukan!');
+                    alert('maaf, data tidak ditemukan!');
                 }
             });                
         }
@@ -204,16 +208,17 @@
                     dataType: 'json',
                     success: function(response) {
                         loadData();
+                        toastr.success('operasi berhasil dilakukan!', 'berhasil');
                         // alert('data berhasil dihapus!');
                     },
                     error: function() {
-                        alert('Gagal menghapus data.');
+                        alert('operasi gagal dilakukan!');
                     }
                 });                
         }
 
         $('#frm-acr-header button').on('click', function() {
-            $('#form input').val('');
+            resetForm();
             $('#nama').focus();
         });        
 
@@ -231,10 +236,12 @@
                     dataType: 'json',
                     success: function(response) {
                         // alert('data berhasil dikirim!');
+                        toastr.success('operasi berhasil dilakukan!', 'berhasil');
                         loadData(); // Reload pesan list after submission
+                        resetForm();
                     },
                     error: function() {
-                        alert('Gagal mengirim data.');
+                        alert('operasi gagal dilakukan!');
                     }
                 });
             }

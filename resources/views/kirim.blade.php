@@ -65,12 +65,35 @@
         });                
     }
 
+    function hitungStatusPesan(pesan) {
+        let sudah = 0;
+        let belum = 0;
+        let total = 0;
+
+        pesan.forEach(item => {
+            total++;
+            if (item.is_berhasil === "belum") {
+                belum++;
+            } else if (item.is_berhasil === "sudah") {
+                sudah++;
+            }
+        });
+
+        return { total: total,belum: belum, sudah: sudah };
+    }
+    
     function createTabs(dtProses) {
         var tabsHTML = '';
         var panesHTML = '';
+        var jumlahProses =[];
 
         $.each(dtProses, function(index, proses) {
             var rowTable ='';
+            var progress = hitungStatusPesan(proses.kirimpesan);
+            // console.log(progress);
+
+            var sudah_progress = (progress.sudah/progress.total)*100;
+
             $.each(proses.kirimpesan, function(index, pesan) {
                 var cekProses='';
                 if(pesan.is_berhasil!=='sudah'){
@@ -89,32 +112,39 @@
                     </tr>
                 `;
             });
-
+            // console.log(progress.total);
+            
             tabsHTML += `
                 <li class="nav-item" role="presentation">
                     <button class="nav-link${index === 0 ? ' active' : ''}" id="tab-${index}" data-bs-toggle="tab" data-bs-target="#pane-${index}" type="button" role="tab" aria-controls="pane-${index}" aria-selected="${index === 0 ? 'true' : 'false'}">${proses.created_at} <a href="javascript:;" class="btn btn-danger btn-sm" onclick="hapusData(${proses.id})">x</a> </button>
                 </li>
             `;
-
+            
             panesHTML += `
                 <div class="tab-pane fade${index === 0 ? ' show active' : ''}" id="pane-${index}" role="tabpanel" aria-labelledby="tab-${index}">
-                    <a href="javascript:;" class="btn btn-success btn-sm mt-2" onclick="kirimSemua()">Kirim Semua</a>
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                <th scope="col"><input type='checkbox' class='cek-semua'></th>
-                                <th scope="col">No</th>
-                                <th scope="col">Nama Lengkap</th>
-                                <th scope="col">No. HP</th>
-                                <th scope="col">Update Waktu</th>
-                                <th scope="col">Keterangan</th>
-                                <th scope="col"></th>
-                            </tr>
-                        </thead>
-                        <tbody id="data-list">
-                            `+rowTable+`
-                        </tbody>
-                    </table>
+                    <a href="javascript:;" class="btn btn-success btn-sm mt-2 bt-2" onclick="kirimSemua()">Kirim Semua</a>
+                    <div>Progress</div>
+                    <div class="progress" role="progressbar" aria-label="data" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100">
+                        <div class="progress-bar" style="width: ${sudah_progress}%"></div>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th scope="col"><input type='checkbox' class='cek-semua'></th>
+                                    <th scope="col">No</th>
+                                    <th scope="col">Nama Lengkap</th>
+                                    <th scope="col">No. HP</th>
+                                    <th scope="col">Update Waktu</th>
+                                    <th scope="col">Keterangan</th>
+                                    <th scope="col"></th>
+                                </tr>
+                            </thead>
+                            <tbody id="data-list">
+                                `+rowTable+`
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             `;
         });
