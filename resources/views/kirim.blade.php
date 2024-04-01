@@ -125,7 +125,7 @@
                     <a href="javascript:;" class="btn btn-success btn-sm mt-2 bt-2" onclick="kirimSemua()">Kirim Semua</a>
                     <div>Progress</div>
                     <div class="progress" role="progressbar" aria-label="data" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100">
-                        <div class="progress-bar" style="width: ${sudah_progress}%"></div>
+                        <div class="progress-bar" style="width: ${sudah_progress}%"></div> ${sudah_progress}%
                     </div>
                     <div class="table-responsive">
                         <table class="table">
