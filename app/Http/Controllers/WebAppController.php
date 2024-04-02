@@ -66,6 +66,6 @@ class WebAppController extends Controller
     public function kirim($id)
     {
         $data['id'] = $id;
-        return view('kirim', $data);
+        return view('kirim2', $data);
     }
 }

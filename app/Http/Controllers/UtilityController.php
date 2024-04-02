@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\WaPesan;
 use App\Models\Pegawai;
+use Illuminate\Support\Facades\DB;
 
 
 class UtilityController extends Controller
@@ -34,5 +35,38 @@ class UtilityController extends Controller
             $ret[$i] = $dp->jumlah;
         }
         return response()->json($ret);
+    }
+
+    public function jumlahWaBlast($thn)
+    {
+        $data = DB::table('wa_pesans as w')
+            ->join('proses as p', 'w.id', '=', 'p.wa_pesan_id')
+            ->join('kirim_pesans as k', 'k.proses_id', '=', 'p.id')
+            ->selectRaw(
+                'COUNT(*) as total,
+                SUM(CASE WHEN k.is_berhasil = true THEN 1 ELSE 0 END) as berhasil,
+                SUM(CASE WHEN k.is_berhasil = false THEN 1 ELSE 0 END) as gagal,
+                SUM(CASE WHEN k.is_berhasil IS NULL THEN 1 ELSE 0 END) as belum'
+            )
+            ->whereYear('w.created_at', $thn)
+            ->groupByRaw('YEAR(w.created_at)')
+            ->first();
+
+        if ($data) {
+            $ret = [
+                'total' => intval($data->total),
+                'gagal' => intval($data->gagal),
+                'berhasil' => intval($data->berhasil),
+                'belum' => intval($data->belum)
+            ];
+        } else {
+            $ret = [
+                'total' => 0,
+                'gagal' => 0,
+                'berhasil' => 0,
+                'belum' => 0
+            ];
+        }
+        return response()->json($data);
     }
 }

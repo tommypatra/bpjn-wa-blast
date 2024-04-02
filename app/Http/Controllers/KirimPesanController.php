@@ -15,23 +15,32 @@ class KirimPesanController extends Controller
 {
     public function index(Request $request)
     {
-        $wa_pesan_id = $request->wa_pesan_id;
-        $dataProses = WaPesan::with([
-            'proses' => function ($query) {
-                $query->select('id', 'wa_pesan_id', 'updated_at', DB::raw('CONVERT_TZ(created_at, "+00:00", "+08:00") AS created_at'));
-            },
-            'proses.kirimpesan' => function ($query) {
-                $query->select('id', DB::raw('IF(is_berhasil,"sudah","belum")as is_berhasil'), 'pegawai_id', 'proses_id', DB::raw('CONVERT_TZ(created_at, "+00:00", "+08:00") AS updated_at'));
-            },
-            'proses.kirimpesan.pegawai' => function ($query) {
-                $query->select('id', 'nama', 'hp');
-            }
-        ])->find($wa_pesan_id);
+        $proses_id = $request->proses_id;
 
-        if (!$dataProses) {
-            return response()->json(['message' => 'data tidak ditemukan'], 404);
+        $query = kirimpesan::select('id', DB::raw('IF(is_berhasil,"sudah","belum")as is_berhasil'), 'pegawai_id', 'proses_id', DB::raw('CONVERT_TZ(updated_at, "+00:00", "+08:00") AS updated_at'))
+            ->with([
+                'pegawai' => function ($query) {
+                    $query->select('id', 'nama', 'hp');
+                }
+            ])->where('proses_id', $proses_id);
+
+        if ($request->has('search')) {
+            $query->whereHas('pegawai', function ($query) use ($request) {
+                $query->where('nama', 'like', '%' . $request->search . '%')
+                    ->orWhere('hp', 'like', '%' . $request->search . '%');
+            });
         }
-        return response()->json($dataProses);
+
+        $dataQuery = $query->paginate(2);
+        $startingNumber = ($dataQuery->currentPage() - 1) * $dataQuery->perPage() + 1;
+
+        $dataQuery->transform(function ($item) use (&$startingNumber) {
+            $item->setAttribute('nomor', $startingNumber++);
+            $item->setAttribute('created_at_formatted', Carbon::parse($item->created_at)->timezone('Asia/Makassar')->toDateTimeString());
+            return $item;
+        });
+
+        return response()->json($dataQuery);
     }
 
     public function store(KirimPesanRequest $request)
@@ -82,16 +91,6 @@ class KirimPesanController extends Controller
     }
 
     public function destroy($id)
-    {
-        $dataQuery = Proses::find($id);
-        if (!$dataQuery) {
-            return response()->json(['message' => 'data tidak ditemukan'], 404);
-        }
-        $dataQuery->delete();
-        return response()->json(null, 204);
-    }
-
-    public function destroyTujuan($id)
     {
         $data = KirimPesan::find($id);
         if (!$data) {

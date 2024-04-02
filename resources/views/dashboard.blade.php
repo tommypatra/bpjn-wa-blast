@@ -9,15 +9,42 @@
     <h3>Dashboard WA Blast BPJN Prov. Sultra</h3>
     <hr>
     Selamat Datang {{ auth()->user()->name }}
-    <p>Review tahun {{ date('Y') }}</p>
+    <p>Review Tahun {{ date('Y') }}</p>
+
+    <div>
+        <p class="card-text">
+            <ol class="list-group list-group-numbered">
+                <li class="list-group-item d-flex justify-content-between align-items-start">
+                    <div class="ms-2 me-auto">
+                        Total Penerima
+                    </div>
+                    <span class="badge text-bg-primary rounded-pill" id="total">0</span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between align-items-start">
+                    <div class="ms-2 me-auto">
+                        Jumlah Terkirim
+                    </div>
+                    <span class="badge text-bg-primary rounded-pill" id="sudah">0</span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between align-items-start">
+                    <div class="ms-2 me-auto">
+                        Jumlah Belum Terkirim
+                    </div>
+                    <span class="badge text-bg-primary rounded-pill" id="belum">0</span>
+                </li>
+            </ol>                
+        </p>
+    </div>
+
+    <p>Grafik Perkembangan Tahun {{ date('Y') }}</p>
 
     <div class="container text-center">
         <div class="row">
             <div class="col-lg-8">
-                <canvas id="monthlyChart" ></canvas>
+                <canvas id="monthlyChart"></canvas>
             </div>
             <div class="col-lg-4">
-                <canvas id="pieChart" ></canvas>
+                <canvas id="pieChart"></canvas>
             </div>
         </div>
     </div>    
@@ -32,14 +59,23 @@
 
     $.get('/api/jumlah_pesan_bulanan/'+thn, function(response) {
         var values = Object.values(response); // Mendapatkan nilai-nilai dari objek JSON
-        grafikBatang(values)
+        grafikBatang(values);
     }).fail(function() {
         console.error('Gagal memuat data.');
     });
 
     $.get('/api/jumlah_pegawai', function(response) {
         var values = Object.values(response); // Mendapatkan nilai-nilai dari objek JSON
-        pieChart(values)
+        pieChart(values);
+    }).fail(function() {
+        console.error('Gagal memuat data.');
+    });    
+
+    $.get('/api/pengiriman_wa_blast/'+thn, function(response) {
+        console.log(response);
+        $('#total').text(parseInt(response.total));
+        $('#sudah').text(parseInt(response.berhasil));
+        $('#belum').text(parseInt(response.gagal)+parseInt(response.belum));
     }).fail(function() {
         console.error('Gagal memuat data.');
     });    
@@ -93,6 +129,7 @@
             options: options
         });
     }
+
 
 </script>
 @endsection
