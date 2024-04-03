@@ -106,7 +106,7 @@
     })
 
     $('#refresh').on('click', function(e) {
-        dataProses(vid);
+        dataKirim(1);
     });
 
     $('.dropdown-item').on('click', function() {
