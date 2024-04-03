@@ -29,7 +29,7 @@ class WaPesanController extends Controller
             )
             ->with('user')
             ->orderByDesc('wa_pesans.updated_at')
-            ->groupBy('wa_pesans.id', 'wa_pesans.judul', 'wa_pesans.pesan', 'wa_pesans.updated_at');
+            ->groupBy('wa_pesans.id');
         if ($request->has('search')) {
             $dataQuery->where('wa_pesans.pesan', 'like', '%' . $request->search . '%')
                 ->orWhere('wa_pesans.judul', 'like', '%' . $request->search . '%');
