@@ -8,11 +8,11 @@
     <div class="accordion" id="pesanAccordion">
         <div class="accordion-item">
             <h2 class="accordion-header" id="pesanHeader">
-                <button class="accordion-button collapsed" id="tambahForm" type="button" data-bs-toggle="collapse" data-bs-target="#bodyPesan" aria-expanded="false" aria-controls="judulPesan">
+                <button class="accordion-button collapsed" id="tambahForm" type="button" data-bs-toggle="collapse" data-bs-target="#bodyAcr" aria-expanded="false" aria-controls="judulPesan">
                     <h3>Pesan Baru</h3>
                 </button>
             </h2>
-            <div id="bodyPesan" class="accordion-collapse collapse" aria-labelledby="pesanHeader" data-bs-parent="#pesanAccordion">
+            <div id="bodyAcr" class="accordion-collapse collapse" aria-labelledby="pesanHeader" data-bs-parent="#pesanAccordion">
                 <div class="accordion-body">
                     <form id="form">
                         <input type="hidden" name="id" id="id" >
@@ -38,8 +38,9 @@
     <div class="row">
         <div class="col-sm-12">
             <div class="input-group justify-content-end">
+                <button type="button" class="btn btn-sm btn-outline-secondary" id="tambah" onclick="tambah()">Tambah</button>
                 <button type="button" class="btn btn-sm btn-outline-secondary" id="refresh">Refresh</button>
-                    <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
+                    <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false" id="btn-paging">
                         Paging
                     </button>
                 <ul class="dropdown-menu dropdown-menu-end" id="list-select-paging">
@@ -85,7 +86,13 @@
     $('#tambahForm').on('click', function() {
         resetForm();
         $('#judul').focus();
-    });        
+    });
+
+    function tambah(){
+        $('#bodyAcr').collapse('show'); // Menampilkan accordion
+        resetForm();
+        $('#judul').focus();
+    }
 
     var oldValue="";
     $('#data-list').on('dblclick', 'td:nth-child(3)', function() {
@@ -216,8 +223,8 @@
 
 
         function resetForm(){
-            $('#form judul').val('');
-            $('#nama').focus();
+            $('#form input').val('');
+            $('#form')[0].reset();
         }
 
         $("#form").validate({
@@ -233,6 +240,7 @@
                         toastr.success('operasi berhasil dilakukan!', 'berhasil');
                         loadData(); // Reload pesan list after submission
                         resetForm();
+                        $('#judul').focus();
                     },
                     error: function() {
                         alert('operasi gagal dilakukan!');

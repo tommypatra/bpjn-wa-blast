@@ -50,7 +50,7 @@
             <div class="col-sm-6">
                 <div class="input-group justify-content-end">
                     <button type="button" class="btn btn-sm btn-outline-secondary" id="refresh">Refresh</button>
-                        <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
+                        <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false"  id="btn-paging">
                             Paging
                         </button>
                     <ul class="dropdown-menu dropdown-menu-end" id="list-select-paging">

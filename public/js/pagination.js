@@ -7,8 +7,10 @@ $.each(vSelectPaging, function(index, value) {
     $('#list-select-paging').append(listItem);
 });
 
+
 function renderPagination(response, paginationElement) {
     var pagination = paginationElement;
+    $('#btn-paging').text('Paging '+vPaging);
 
     pagination.empty();
     if (response.last_page > 1) {

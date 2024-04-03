@@ -63,11 +63,7 @@ class DatabaseSeeder extends Seeder
         // }
 
         //untuk wapesan
-        $dtdef = [
-            ['user_id' => 1, 'nama' => 'Tommy Irawan Patra', 'hp' => '085331019999'],
-            ['user_id' => 1, 'nama' => 'Amalia Desi Arisanti', 'hp' => '085331009999'],
-            ['user_id' => 1, 'nama' => 'Uti Aleesya AlFath Arumi', 'hp' => '085299370466'],
-        ];
+        $dtdef = [];
 
         foreach ($dtdef as $dt) {
             Pegawai::create([

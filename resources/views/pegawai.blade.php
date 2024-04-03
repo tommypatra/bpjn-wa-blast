@@ -8,7 +8,7 @@
     <div class="accordion" id="frmAcr">
         <div class="accordion-item">
             <h2 class="accordion-header" id="frm-acr-header">
-                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#bodyAcr" aria-expanded="false" aria-controls="aria-acr-controls">
+                <button class="accordion-button collapsed" id="tambahForm" type="button" data-bs-toggle="collapse" data-bs-target="#bodyAcr" aria-expanded="false" aria-controls="aria-acr-controls">
                     <h3>Pegawai Baru</h3>
                 </button>
             </h2>
@@ -39,8 +39,9 @@
     <div class="row">
         <div class="col-sm-12">
             <div class="input-group justify-content-end">
+                <button type="button" class="btn btn-sm btn-outline-secondary" id="tambah" onclick="tambah()">Tambah</button>
                 <button type="button" class="btn btn-sm btn-outline-secondary" id="refresh">Refresh</button>
-                    <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
+                    <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false"  id="btn-paging">
                         Paging
                     </button>
                 <ul class="dropdown-menu dropdown-menu-end" id="list-select-paging">
@@ -81,7 +82,14 @@
 <script src="{{ asset('js/token.js') }}"></script>
 
 <script>
-   function loadData(page = 1, search = '') {
+
+    function tambah(){
+        $('#bodyAcr').collapse('show'); // Menampilkan accordion
+        resetForm();
+        $('#nama').focus();
+    }
+
+    function loadData(page = 1, search = '') {
             $.ajax({
                 url: '/api/pegawai?page=' + page + '&search=' + search + '&paging=' + vPaging,
                 method: 'GET',
@@ -162,7 +170,7 @@
 
         function resetForm(){
             $('#form input').val('');
-            $('#nama').focus();
+            $('#form')[0].reset();
         }
 
         $('#tambahBaru').on('click', function(e) {
@@ -178,6 +186,7 @@
             }else{
                 resetForm();
             }
+            $('#nama').focus();
         });
 
 
