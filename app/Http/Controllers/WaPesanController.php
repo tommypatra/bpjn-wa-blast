@@ -29,8 +29,8 @@ class WaPesanController extends Controller
             ->groupBy('wa_pesans.id');
 
         if ($request->has('search')) {
-            $dataQuery->where('pesan', 'like', '%' . $request->search . '%')
-                ->orWhere('judul', 'like', '%' . $request->search . '%');
+            $dataQuery->where('wa_pesans.pesan', 'like', '%' . $request->search . '%')
+                ->orWhere('wa_pesans.judul', 'like', '%' . $request->search . '%');
         }
 
         $paging = 25;
