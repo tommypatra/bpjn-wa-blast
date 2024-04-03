@@ -1,5 +1,5 @@
 var vPaging = 25;
-var vSelectPaging = [1,25,50,125,250,500];
+var vSelectPaging = [25,50,125,250,500];
 
 $.each(vSelectPaging, function(index, value) {
     // var listItem = $('<li>').text(value);
