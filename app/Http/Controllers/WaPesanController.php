@@ -18,7 +18,10 @@ class WaPesanController extends Controller
         $dataQuery = WaPesan::leftJoin('proses', 'wa_pesans.id', '=', 'proses.wa_pesan_id')
             ->leftJoin('kirim_pesans', 'proses.id', '=', 'kirim_pesans.proses_id')
             ->select(
-                'wa_pesans.*',
+                'wa_pesans.id',
+                'wa_pesans.judul',
+                'wa_pesans.pesan',
+                'wa_pesans.updated_at',
                 DB::raw('COUNT(proses.id) as jumlah_proses'),
                 DB::raw('SUM(CASE WHEN kirim_pesans.is_berhasil = 1 THEN 1 ELSE 0 END) as jumlah_berhasil'),
                 DB::raw('SUM(CASE WHEN kirim_pesans.is_berhasil = 0 THEN 1 ELSE 0 END) as jumlah_gagal'),
