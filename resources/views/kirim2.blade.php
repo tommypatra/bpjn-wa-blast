@@ -35,13 +35,32 @@
     <div class="tab-content" id="prosesTabContent">
         <div id="progress-kirim" style="display:none;">
             <a href="javascript:;" class="btn btn-success btn-sm mt-2 bt-2" onclick="kirimSemua()">Kirim Semua</a>
-            <div>Progress</div>
+            <div>Progres Pesan Terkirim</div>
             <div class="progress" role="progressbar" aria-label="data" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100">
                 <div class="progress-bar" style="width: 0%"></div> <span class="progress-value">0%</span>
             </div>
         </div>
 
+        <div class="row mt-2">
+            <div class="col-sm-6">
+                <span class="badge rounded-pill text-bg-success" id="jumlah-berhasil">0</span>
+                <span class="badge rounded-pill text-bg-danger" id="jumlah-gagal">0</span>
+                <span class="badge rounded-pill text-bg-primary" id="jumlah-belum">0</span> 
+            </div>
+            <div class="col-sm-6">
+                <div class="input-group justify-content-end">
+                    <button type="button" class="btn btn-sm btn-outline-secondary" id="refresh">Refresh</button>
+                        <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
+                            Paging
+                        </button>
+                    <ul class="dropdown-menu dropdown-menu-end" id="list-select-paging">
+                    </ul>
+                </div>
+            </div>
+        </div>
+
         <div class="table-responsive">
+
             <table class="table">
                 <thead>
                     <tr>
@@ -86,6 +105,15 @@
         dataKirim(1);
     })
 
+    $('#refresh').on('click', function(e) {
+        dataProses(vid);
+    });
+
+    $('.dropdown-item').on('click', function() {
+        vPaging=$(this).data('nilai');
+        dataProses(vid);
+    })
+
     function dataProses(id){
         $.ajax({
             url: '/api/proses',
@@ -119,7 +147,7 @@
         var id = $('.nav-tabs .nav-link.active').attr('data-proses_id');
         var search = $('#search-input').val();
         $.ajax({
-            url: '/api/kirim?page=' + page + '&search=' + search,
+            url: '/api/kirim?page=' + page + '&search=' + search + '&paging=' + vPaging,
             method: 'GET',
             data: {
                 proses_id: id,
@@ -130,6 +158,7 @@
                 var pagination = $('#pagination');
                 var sudah = 0;
                 var belum = 0;
+                var gagal = 0;
                 var total = 0;
                 var sudah_progress = 0;
 
@@ -140,10 +169,13 @@
                     var btnHps='';
 
                     total++;
-                    if (dt.is_berhasil === "belum")
-                        belum++;
-                    else if (dt.is_berhasil === "sudah") 
+                    if (dt.is_berhasil === "gagal") {
+                        gagal++;
+                    } else if (dt.is_berhasil === "sudah") {
                         sudah++;
+                    } else {
+                        belum++;
+                    }
 
                     if(dt.is_berhasil!=='sudah'){
                         cekProses=`<input type='checkbox' class='cek-kirim' data-kirim_pesan_id='${dt.id}'>`;
@@ -171,6 +203,9 @@
                     $('#progress-kirim').show();
                 }
 
+                $('#jumlah-berhasil').text('berhasil : '+sudah);
+                $('#jumlah-gagal').text('gagal : '+gagal);
+                $('#jumlah-belum').text('belum : '+belum);
                 renderPagination(response, pagination);            
             },
             error: function() {
@@ -178,6 +213,8 @@
             }
         });                
     }    
+
+    
 
     function hapusData(id){
         if(confirm('apakah anda yakin?'))
@@ -214,6 +251,7 @@
     $(document).on('click', '.cek-semua', function(){
         $('.cek-kirim').prop('checked', this.checked);
     });
+
 
     $('#prosesBaru').on('click', function(e) {
         e.preventDefault();

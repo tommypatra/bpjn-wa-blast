@@ -36,7 +36,22 @@
     <hr>
 
     <h3>Daftar Pegawai</h3>
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="input-group justify-content-end">
+                <button type="button" class="btn btn-sm btn-outline-secondary" id="refresh">Refresh</button>
+                    <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
+                        Paging
+                    </button>
+                <ul class="dropdown-menu dropdown-menu-end" id="list-select-paging">
+                </ul>
+            </div>
+        </div>
+    </div>
+
     <div class="table-responsive">
+
+
         <table class="table">
             <thead>
                 <tr>
@@ -68,7 +83,7 @@
 <script>
    function loadData(page = 1, search = '') {
             $.ajax({
-                url: '/api/pegawai?page=' + page + '&search=' + search,
+                url: '/api/pegawai?page=' + page + '&search=' + search + '&paging=' + vPaging,
                 method: 'GET',
                 success: function(response) {
                     var dataList = $('#data-list');
@@ -164,6 +179,17 @@
                 resetForm();
             }
         });
+
+
+        $('#refresh').on('click', function(e) {
+            loadData();
+        });
+
+        $('.dropdown-item').on('click', function() {
+            vPaging=$(this).data('nilai');
+            loadData();
+        })
+
 
         // Handle search form submission
         $('.cari-data').click(function(){

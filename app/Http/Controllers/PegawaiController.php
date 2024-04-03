@@ -11,12 +11,18 @@ class PegawaiController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Pegawai::with('user')->orderBy('nama', 'asc');
+        $dataQuery = Pegawai::with('user')->orderBy('nama', 'asc');
         if ($request->has('search')) {
-            $query->where('nama', 'like', '%' . $request->search . '%')
+            $dataQuery->where('nama', 'like', '%' . $request->search . '%')
                 ->orWhere('hp', 'like', '%' . $request->search . '%');
         }
-        $dataQuery = $query->paginate(10);
+
+        $paging = 25;
+        if ($request->has('paging')) {
+            $paging = $request->paging;
+        }
+        $dataQuery = $dataQuery->paginate($paging);
+
         $startingNumber = ($dataQuery->currentPage() - 1) * $dataQuery->perPage() + 1;
 
         $dataQuery->transform(function ($item) use (&$startingNumber) {

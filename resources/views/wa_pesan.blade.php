@@ -35,7 +35,21 @@
     <hr>
 
     <h3>Daftar Pesan</h3>
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="input-group justify-content-end">
+                <button type="button" class="btn btn-sm btn-outline-secondary" id="refresh">Refresh</button>
+                    <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
+                        Paging
+                    </button>
+                <ul class="dropdown-menu dropdown-menu-end" id="list-select-paging">
+                </ul>
+            </div>
+        </div>
+    </div>
+
     <div class="table-responsive">
+
         <table class="table">
             <thead>
                 <tr>
@@ -43,6 +57,9 @@
                     <th scope="col">Judul</th>
                     <th scope="col">Pesan</th>
                     <th scope="col">User</th>
+                    <th scope="col">Terkirim</th>
+                    <th scope="col">Gagal</th>
+                    <th scope="col">Belum</th>
                     <th scope="col">Waktu</th>
                     <th scope="col">Aksi</th>
                 </tr>
@@ -114,7 +131,7 @@
     
     function loadData(page = 1, search = '') {
             $.ajax({
-                url: '/api/pesan?page=' + page + '&search=' + search,
+                url: '/api/pesan?page=' + page + '&search=' + search + '&paging=' + vPaging,
                 method: 'GET',
                 success: function(response) {
                     var dataList = $('#data-list');
@@ -127,6 +144,9 @@
                                 <td>${pesan.judul}</td> 
                                 <td>${pesan.pesan}</td> 
                                 <td>${pesan.user.name}</td> 
+                                <td style="text-align: center;"><span class="badge rounded-pill text-bg-success">${pesan.jumlah_berhasil}</span></td> 
+                                <td style="text-align: center;"><span class="badge rounded-pill text-bg-danger">${pesan.jumlah_gagal}</span></td> 
+                                <td style="text-align: center;"><span class="badge rounded-pill text-bg-primary">${pesan.jumlah_null}</span></td> 
                                 <td>${pesan.created_at_formatted}</td> 
                                 <td>
                                     <div class="btn-group btn-group-sm" role="group" aria-label="Basic example">
@@ -184,6 +204,16 @@
                     }
                 });                
         }
+
+        $('#refresh').on('click', function(e) {
+            loadData();
+        });
+
+        $('.dropdown-item').on('click', function() {
+            vPaging=$(this).data('nilai');
+            loadData();
+        })
+
 
         function resetForm(){
             $('#form judul').val('');

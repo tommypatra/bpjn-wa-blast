@@ -15,19 +15,38 @@ class WaPesanController extends Controller
 {
     public function index(Request $request)
     {
-        $query = WaPesan::with('user')->orderByDesc('id');
+        $dataQuery = WaPesan::leftJoin('proses', 'wa_pesans.id', '=', 'proses.wa_pesan_id')
+            ->leftJoin('kirim_pesans', 'proses.id', '=', 'kirim_pesans.proses_id')
+            ->select(
+                'wa_pesans.*',
+                DB::raw('COUNT(proses.id) as jumlah_proses'),
+                DB::raw('SUM(CASE WHEN kirim_pesans.is_berhasil = 1 THEN 1 ELSE 0 END) as jumlah_berhasil'),
+                DB::raw('SUM(CASE WHEN kirim_pesans.is_berhasil = 0 THEN 1 ELSE 0 END) as jumlah_gagal'),
+                DB::raw('SUM(CASE WHEN kirim_pesans.is_berhasil IS NULL THEN 1 ELSE 0 END) as jumlah_null')
+            )
+            ->with('user')
+            ->orderByDesc('wa_pesans.updated_at')
+            ->groupBy('wa_pesans.id');
+
         if ($request->has('search')) {
-            $query->where('pesan', 'like', '%' . $request->search . '%')
+            $dataQuery->where('pesan', 'like', '%' . $request->search . '%')
                 ->orWhere('judul', 'like', '%' . $request->search . '%');
         }
-        $dataQuery = $query->paginate(10);
+
+        $paging = 25;
+        if ($request->has('paging')) {
+            $paging = $request->paging;
+        }
+
+        $dataQuery = $dataQuery->paginate($paging);
+
         $startingNumber = ($dataQuery->currentPage() - 1) * $dataQuery->perPage() + 1;
 
         $dataQuery->transform(function ($item) use (&$startingNumber) {
+            if ($item->jumlah_proses < 1)
+                $item->setAttribute('jumlah_null', 0);
             $item->setAttribute('nomor', $startingNumber++);
-            // $item->setAttribute('created_at_formatted', $item->created_at->toDateTimeString());
-            $item->setAttribute('created_at_formatted', Carbon::parse($item->created_at)->timezone('Asia/Makassar')->toDateTimeString());
-
+            $item->setAttribute('created_at_formatted', Carbon::parse($item->updated_at)->timezone('Asia/Makassar')->toDateTimeString());
             return $item;
         });
 

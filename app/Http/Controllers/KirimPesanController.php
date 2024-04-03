@@ -17,21 +17,26 @@ class KirimPesanController extends Controller
     {
         $proses_id = $request->proses_id;
 
-        $query = kirimpesan::select('id', DB::raw('IF(is_berhasil,"sudah","belum")as is_berhasil'), 'pegawai_id', 'proses_id', DB::raw('CONVERT_TZ(updated_at, "+00:00", "+08:00") AS updated_at'))
+        $dataQuery = kirimpesan::select('id', DB::raw('IF(is_berhasil=1,"sudah",IF(is_berhasil=0,"gagal","belum"))as is_berhasil'), 'pegawai_id', 'proses_id', DB::raw('CONVERT_TZ(updated_at, "+00:00", "+08:00") AS updated_at'))
             ->with([
-                'pegawai' => function ($query) {
-                    $query->select('id', 'nama', 'hp');
+                'pegawai' => function ($dataQuery) {
+                    $dataQuery->select('id', 'nama', 'hp');
                 }
             ])->where('proses_id', $proses_id);
 
         if ($request->has('search')) {
-            $query->whereHas('pegawai', function ($query) use ($request) {
-                $query->where('nama', 'like', '%' . $request->search . '%')
+            $dataQuery->whereHas('pegawai', function ($dataQuery) use ($request) {
+                $dataQuery->where('nama', 'like', '%' . $request->search . '%')
                     ->orWhere('hp', 'like', '%' . $request->search . '%');
             });
         }
 
-        $dataQuery = $query->paginate(2);
+        $paging = 25;
+        if ($request->has('paging')) {
+            $paging = $request->paging;
+        }
+
+        $dataQuery = $dataQuery->paginate($paging);
         $startingNumber = ($dataQuery->currentPage() - 1) * $dataQuery->perPage() + 1;
 
         $dataQuery->transform(function ($item) use (&$startingNumber) {

@@ -68,18 +68,21 @@
     function hitungStatusPesan(pesan) {
         let sudah = 0;
         let belum = 0;
+        let gagal = 0;
         let total = 0;
 
         pesan.forEach(item => {
             total++;
-            if (item.is_berhasil === "belum") {
-                belum++;
+            if (item.is_berhasil === "gagal") {
+                gagal++;
             } else if (item.is_berhasil === "sudah") {
                 sudah++;
+            } else {
+                belum++;
             }
         });
 
-        return { total: total,belum: belum, sudah: sudah };
+        return { total: total,belum: belum, sudah: sudah, gagal : gagal };
     }
     
     function createTabs(dtProses) {
