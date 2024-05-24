@@ -135,7 +135,7 @@
         $(document).on('click', '.page-link', function() {
             var page = $(this).data('page');
             var search = $('#search-input').val();
-            loadPesan(page, search);
+            loadData(page, search);
         });
         
         $(document).on('change', '.ganti-status', function() {
