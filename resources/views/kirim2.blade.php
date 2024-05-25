@@ -96,7 +96,8 @@
 <script>
 
 var vid={{ $id }};
-var waktuDelay=2;
+var jumlahDelay=10;
+var waktuDelay=2000;
 
 var modalElement = document.getElementById('loadingModal');
 var modal = new bootstrap.Modal(modalElement, {
@@ -405,10 +406,10 @@ $(document).ready(function(){
                     dataTerproses++;
                     statistikProgress(dataTerproses,sudah,gagal,belum);
 
-                    if (dataTerproses % waktuDelay === 0) {
+                    if (dataTerproses % jumlahDelay === 0) {
                         setTimeout(function() {
                             proses(index + 1);
-                        }, 2000);
+                        }, waktuDelay);
                     } else {
                         proses(index + 1);
                     }                    
@@ -422,10 +423,10 @@ $(document).ready(function(){
                     dataTerproses++;
                     statistikProgress(dataTerproses,sudah,gagal,belum);
 
-                    if (dataTerproses % waktuDelay === 0) {
+                    if (dataTerproses % jumlahDelay === 0) {
                         setTimeout(function() {
                             proses(index + 1);
-                        }, 2000);
+                        }, waktuDelay);
                     } else {
                         proses(index + 1);
                     }                    
