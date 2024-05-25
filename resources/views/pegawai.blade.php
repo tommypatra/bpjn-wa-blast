@@ -39,8 +39,8 @@
     <div class="row">
         <div class="col-sm-12">
             <div class="input-group justify-content-end">
-                <button type="button" class="btn btn-sm btn-outline-secondary" id="tambah" onclick="tambah()">Tambah</button>
-                <button type="button" class="btn btn-sm btn-outline-secondary" id="refresh">Refresh</button>
+                <button type="button" class="btn btn-sm btn-outline-secondary tambah">Tambah</button>
+                <button type="button" class="btn btn-sm btn-outline-secondary refresh">Refresh</button>
                     <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false"  id="btn-paging">
                         Paging
                     </button>
@@ -83,11 +83,17 @@
 
 <script>
 
-    function tambah(){
-        $('#bodyAcr').collapse('show'); // Menampilkan accordion
+
+
+$(document).ready(function(){
+
+    $('.tambah').click(function(){
         resetForm();
-        $('#nama').focus();
-    }
+        $('#bodyAcr').collapse('show');
+        $(window).scrollTop(0); 
+        $('#nama').focus(); 
+    })
+
 
     function loadData(page = 1, search = '') {
             $.ajax({
@@ -106,7 +112,7 @@
                         dataList.append(`<tr> 
                                 <td>${dt.nomor}</td> 
                                 <td>${dt.nama}</td> 
-                                <td>${dt.hp}</td> 
+                                <td class="nomor-hp">${dt.hp}</td> 
                                 <td>${dt.user.name}</td> 
                                 <td>${dt.created_at_formatted}</td> 
                                 <td> 
@@ -116,8 +122,8 @@
                                 </td>
                                 <td>
                                     <div class="btn-group btn-group-sm" role="group" aria-label="Basic example">
-                                        <button type="button" class="btn btn-warning" onclick="ganti(${dt.id})" id="proses">Ganti</button>
-                                        <button type="button" class="btn btn-danger" onclick="hapusData(${dt.id})" id="hapus">Hapus</button>
+                                        <button type="button" class="btn btn-warning ganti" data-id="${dt.id}" >Ganti</button>
+                                        <button type="button" class="btn btn-danger hapus" data-id="${dt.id}" >Hapus</button>
                                     </div>                                        
                                 </td>
                             </tr>`);
@@ -189,16 +195,53 @@
             $('#nama').focus();
         });
 
-
         $('#refresh').on('click', function(e) {
             loadData();
         });
 
-        $('.dropdown-item').on('click', function() {
+        $('.pagination-limit').on('click', function() {
             vPaging=$(this).data('nilai');
             loadData();
         })
 
+        var nomor_hp_lama="";
+
+        $(document).on('dblclick', '.nomor-hp', function(event) {
+            nomor_hp_lama = $(this).text();
+            $(this).html('<input type="text" class="form-control" value="' + nomor_hp_lama + '">');
+            $(this).find('input').focus();
+        });
+
+        $(document).on('keypress', '.nomor-hp input', function(event) {
+            if (event.which == 13)
+                updateHp($(this));
+        });
+
+        $(document).on('blur', '.nomor-hp input', function(event) {
+            updateHp($(this));
+        });
+
+        function updateHp($input) {
+            var id = $input.closest('tr').find('.ganti').data('id');
+            var nomor_hp_baru = $input.val();
+            if(nomor_hp_lama!==nomor_hp_baru)
+                $.ajax({
+                    url: '/api/update-hp/' + id,
+                    method: 'PUT',
+                    data: { hp: nomor_hp_baru },
+                    dataType: 'json',
+                    success: function(response) {
+                        // Tampilkan pesan sukses atau lakukan aksi lainnya jika diperlukan
+                        $input.closest('.nomor-hp').text(nomor_hp_baru);
+                        toastr.success('nomor hp berhasil diperbaharui!', 'berhasil');
+                    },
+                    error: function() {
+                        alert('Maaf, terjadi kesalahan. Nomor HP tidak dapat diperbarui.');
+                    }
+                });
+            else
+                $input.closest('.nomor-hp').text(nomor_hp_lama);
+        }
 
         // Handle search form submission
         $('.cari-data').click(function(){
@@ -215,27 +258,29 @@
             window.open(goUrl, '_blank');        
         }
 
-        function ganti(id){
+        $(document).on('click', '.ganti', function() {        
+            var id=$(this).data('id');
             $.ajax({
                 url: '/api/pegawai/' + id,
                 method: 'GET',
                 dataType: 'json',
                 success: function(response) {
-                    console.log(response);
+                    $('#bodyAcr').collapse('show');
+                    $(window).scrollTop(0); 
+                    $('#nama').focus(); 
+
                     $('#id').val(response.id);
                     $('#nama').val(response.nama);
                     $('#hp').val(response.hp);
-                    $('#bodyAcr').collapse('show'); // Menampilkan accordion
-                    $('#nama').focus(); // Fokuskan input nama                
                 },
                 error: function() {
                     alert('maaf, data tidak ditemukan!');
                 }
             });                
-        }
+        });
 
-
-        function hapusData(id){
+        $(document).on('click','.hapus',function (){
+            var id=$(this).data('id');
             if(confirm('apakah anda yakin?'))
                 $.ajax({
                     url: '/api/pegawai/' + id,
@@ -244,13 +289,12 @@
                     success: function(response) {
                         loadData();
                         toastr.success('operasi berhasil dilakukan!', 'berhasil');
-                        // alert('data berhasil dihapus!');
                     },
                     error: function() {
                         alert('operasi gagal dilakukan!');
                     }
                 });                
-        }
+        });
 
         $('#frm-acr-header button').on('click', function() {
             resetForm();
@@ -281,5 +325,6 @@
                 });
             }
         });    
+});    
 </script>
 @endsection

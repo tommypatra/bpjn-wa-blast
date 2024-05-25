@@ -38,8 +38,8 @@
     <div class="row">
         <div class="col-sm-12">
             <div class="input-group justify-content-end">
-                <button type="button" class="btn btn-sm btn-outline-secondary" id="tambah" onclick="tambah()">Tambah</button>
-                <button type="button" class="btn btn-sm btn-outline-secondary" id="refresh">Refresh</button>
+                <button type="button" class="btn btn-sm btn-outline-secondary tambah" id="tambah">Tambah</button>
+                <button type="button" class="btn btn-sm btn-outline-secondary refresh" id="refresh">Refresh</button>
                     <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false" id="btn-paging">
                         Paging
                     </button>
@@ -83,16 +83,19 @@
 
 <script>
 
+$(document).ready(function(){
+
     $('#tambahForm').on('click', function() {
         resetForm();
         $('#judul').focus();
     });
 
-    function tambah(){
-        $('#bodyAcr').collapse('show'); // Menampilkan accordion
+    $('#tambah').click(function(){
         resetForm();
-        $('#judul').focus();
-    }
+        $('#bodyAcr').collapse('show');
+        $(window).scrollTop(0); 
+        $('#judul').focus(); 
+    });
 
     var oldValue="";
     $('#data-list').on('dblclick', 'td:nth-child(3)', function() {
@@ -157,8 +160,8 @@
                                 <td>${pesan.created_at_formatted}</td> 
                                 <td>
                                     <div class="btn-group btn-group-sm" role="group" aria-label="Basic example">
-                                        <button type="button" class="btn btn-primary" onclick="redirectTo(${pesan.id})" id="proses">Proses</button>
-                                        <button type="button" class="btn btn-danger" onclick="hapusData(${pesan.id})" id="hapus">Hapus</button>
+                                        <button type="button" class="btn btn-primary redirectTo" data-id="${pesan.id}" >Proses</button>
+                                        <button type="button" class="btn btn-danger hapusData" data-id="${pesan.id}" >Hapus</button>
                                     </div>                                        
                                 </td>
                             </tr>`);
@@ -189,12 +192,14 @@
             }
         })
 
-        function redirectTo(id){
+        $(document).on('click','.redirectTo',function(){
+            var id=$(this).data('id');
             var goUrl = `{{ url('/kirim/${id}') }}`;
             window.open(goUrl, '_blank');        
-        }
+        });
 
-        function hapusData(id){
+        $(document).on('click','.hapusData',function(){
+            var id=$(this).data('id');
             if(confirm('apakah anda yakin?'))
                 $.ajax({
                     url: '/api/pesan/' + id,
@@ -210,13 +215,13 @@
                         alert('operasi gagal dilakukan!');
                     }
                 });                
-        }
+        });
 
         $('#refresh').on('click', function(e) {
             loadData();
         });
 
-        $('.dropdown-item').on('click', function() {
+        $('.pagination-limit').on('click', function() {
             vPaging=$(this).data('nilai');
             loadData();
         })
@@ -247,6 +252,7 @@
                     }
                 });
             }
-        });    
+        });   
+});            
 </script>
 @endsection

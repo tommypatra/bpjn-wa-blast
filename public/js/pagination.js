@@ -3,7 +3,7 @@ var vSelectPaging = [25,50,125,250,500];
 
 $.each(vSelectPaging, function(index, value) {
     // var listItem = $('<li>').text(value);
-    var listItem = $('<li>').html(`<a class="dropdown-item" href="javascript:;" data-nilai="${value}">${value}  </a>`);
+    var listItem = $('<li>').html(`<a class="dropdown-item pagination-limit" href="javascript:;" data-nilai="${value}">${value}  </a>`);
     $('#list-select-paging').append(listItem);
 });
 

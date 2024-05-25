@@ -41,6 +41,8 @@
 <script>
     var csrfToken = $('meta[name="csrf-token"]').attr('content');
 
+$(document).ready(function(){
+
     $("#myform").validate({
         submitHandler: function(form) {
             $.ajax({
@@ -79,6 +81,8 @@
             }
         });
     }    
+});
+
 </script>
 
 </body>

@@ -41,8 +41,9 @@
 <script src="{{ asset('js/token.js') }}"></script>
 
 <script>
-    var vid={{ $id }};
 
+var vid={{ $id }};
+$(document).ready(function(){
     dataProses(vid);
 
     function dataProses(id){
@@ -125,7 +126,7 @@
             
             panesHTML += `
                 <div class="tab-pane fade${index === 0 ? ' show active' : ''}" id="pane-${index}" role="tabpanel" aria-labelledby="tab-${index}">
-                    <a href="javascript:;" class="btn btn-success btn-sm mt-2 bt-2" onclick="kirimSemua()">Kirim Semua</a>
+                    <a href="javascript:;" class="btn btn-success btn-sm mt-2 bt-2 kirimSemua">Kirim Pesan Ditandai</a>
                     <div>Progress</div>
                     <div class="progress" role="progressbar" aria-label="data" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100">
                         <div class="progress-bar" style="width: ${sudah_progress}%"></div> ${sudah_progress}%
@@ -233,14 +234,15 @@
 
     var dataTerproses = 0;
     var dataTerpilih = 0;
-    function kirimSemua() {
+
+    $(document).on('click','.kirimSemua',function() {
         dataTerpilih = $('.cek-kirim:checked').length;
         dataTerproses = 0;
         if(confirm('apakah anda yakin?')){
             $('.proses-berjalan').html('');
             proses(0);
         }
-    }
+    });
 
     function proses(index) {
         var tabAktif = $('.tab-pane.active');
@@ -298,6 +300,7 @@
             // $('.proses-berjalan').html(Math.ceil((dataTerproses / dataTerpilih) * 100) + '%');
         }
     }
+});
 
 </script>
 @endsection

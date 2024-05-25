@@ -61,6 +61,16 @@ class PegawaiController extends Controller
         return response()->json($dataQuery, 200);
     }
 
+    public function updateHp(Request $request, $id)
+    {
+        $dataQuery = Pegawai::find($id);
+        if (!$dataQuery) {
+            return response()->json(['message' => 'data tidak ditemukan'], 404);
+        }
+        $dataQuery->update($request->all());
+        return response()->json($dataQuery, 200);
+    }
+
     public function destroy($id)
     {
         $dataQuery = Pegawai::find($id);

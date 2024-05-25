@@ -1,29 +1,28 @@
-var myModalWeb = new bootstrap.Modal(document.getElementById('loadingModal'), {
+var modalElement = document.getElementById('loadingModal');
+var modal = new bootstrap.Modal(modalElement, {
     keyboard: false
-});       
+});
 
 function showLoading() {
     $('.proses-berjalan').html('');
-    myModalWeb.show();
+    modal.show();
 }
 
 function hideLoading() {
-    $(document).on('shown.bs.modal', '#loadingModal', function () {
-        var modalElement = document.getElementById('loadingModal');
-        var mymodal = bootstrap.Modal.getInstance(modalElement);
-        mymodal.hide();
-    });
+    modalElement.addEventListener('shown.bs.modal', function () {
+        modal.hide();
+    });    
     $('.proses-berjalan').html('');
 }
 
 $(document).ajaxStart(function() {
-    showLoading();
+    //showLoading();
 });
 
 $(document).ajaxStop(function() {
-    hideLoading();
+    //hideLoading();
 });
 
 $(document).ajaxError(function() {
-    hideLoading();
+    //hideLoading();
 });

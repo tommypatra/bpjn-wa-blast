@@ -26,6 +26,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/jumlah_pesan_bulanan/{thn}', [UtilityController::class, 'jumlahPesanBulanan']);
     Route::get('/jumlah_pegawai', [UtilityController::class, 'jumlahPegawai']);
     Route::get('/pengiriman_wa_blast/{thn}', [UtilityController::class, 'jumlahWaBlast']);
+    Route::put('update-hp/{id}', [PegawaiController::class, 'updateHp']);
+
 
     Route::resource('pesan', WaPesanController::class);
     Route::resource('pegawai', PegawaiController::class);
