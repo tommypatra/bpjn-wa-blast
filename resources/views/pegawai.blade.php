@@ -224,7 +224,8 @@ $(document).ready(function(){
         function updateHp($input) {
             var id = $input.closest('tr').find('.ganti').data('id');
             var nomor_hp_baru = $input.val();
-            if(nomor_hp_lama!==nomor_hp_baru)
+            if(nomor_hp_lama!==nomor_hp_baru){
+                nomor_hp_lama = nomor_hp_baru;
                 $.ajax({
                     url: '/api/update-hp/' + id,
                     method: 'PUT',
@@ -239,6 +240,7 @@ $(document).ready(function(){
                         alert('Maaf, terjadi kesalahan. Nomor HP tidak dapat diperbarui.');
                     }
                 });
+            }
             else
                 $input.closest('.nomor-hp').text(nomor_hp_lama);
         }
